@@ -114,7 +114,7 @@ DWORD WINAPI ServerAgent::SocketThread(LPVOID lpParam)
 		PK_DATA.deserialize(Buffer);
 
 		std::cout << "[TCP/" << inet_ntoa(threadSocketAddress.sin_addr)
-			<< _T(":") << PK_DATA.GetData();
+			<< _T(":") << PK_DATA.GetData() << std::endl;
 
 		//Displaying Receiving Data
 		//Buffer[retval+1] = _T('\0');
