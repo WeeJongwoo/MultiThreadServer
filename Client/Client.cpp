@@ -53,32 +53,30 @@ void Client::Init()
 
 void Client::Communication()
 {
-    //char buf[BUFSIZE + 1];
+    char buf[BUFSIZE + 1];
     //int len;
-
-    char sendBuf[sizeof(StringPacket)] = {0};
 
     // 서버와 데이터 통신
     while (1) {
         // 데이터 입력
         printf("\n[보낼 데이터] ");
        
-		if (fgets(sendBuf, BUFSIZE + 1, stdin) == NULL)
+		if (fgets(buf, BUFSIZE + 1, stdin) == NULL)
 			break;
 
 		// '\n' 문자 제거
-		len = strlen(sendBuf);
-		if (sendBuf[len - 1] == '\n')
-            sendBuf[len - 1] = '\0';
-		if (strlen(sendBuf) == 0)
+		len = strlen(buf);
+		if (buf[len - 1] == '\n')
+            buf[len - 1] = '\0';
+		if (strlen(buf) == 0)
 			break;
 
-        StringPacket PK_DATA(sendBuf);
+        StringPacket PK_DATA(buf);
 
         //// 데이터 보내기
-        PK_DATA.serialize(sendBuf);
+        PK_DATA.serialize(buf);
 
-        retval = send(sock, sendBuf, PK_DATA.GetLen(), 0);
+        retval = send(sock, buf, PK_DATA.GetLen(), 0);
         if (retval == SOCKET_ERROR) {
             err_display((char*)"send()");
             break;
