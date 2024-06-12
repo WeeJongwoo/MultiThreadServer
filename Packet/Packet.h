@@ -6,18 +6,17 @@ class Packet
 {
 protected:
 	short len;
-	PacketHeader header;
+	EPacketHeader Header;
 	short endMark;
 
 public:
 
-	Packet(PacketHeader InHeader, short InEndMark);
+	Packet(EPacketHeader InHeader, short InEndMark);
 	~Packet();
 
-	short GetLen() { return len; }
-
-	virtual void serialize(char* InBuf);
-	virtual void deserialize(const char* InBuf);
+	short* GetLen() { return &len; }
+	EPacketHeader* GetHeader();
+	short* GetEndMark() { return &endMark; };
 
 };
 

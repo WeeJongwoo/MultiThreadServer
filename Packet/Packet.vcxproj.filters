@@ -18,7 +18,7 @@
     <ClCompile Include="Packet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StringPacket.cpp">
+    <ClCompile Include="PacketParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,7 +29,7 @@
     <ClInclude Include="PacketHeader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StringPacket.h">
+    <ClInclude Include="PacketParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
