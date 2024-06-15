@@ -5,7 +5,8 @@
 #include <winsock2.h>
 #include <stdlib.h>
 #include "iostream"
-#include "../Packet/StringPacket.h"
+#include "../Packet/ConReqPacket.h"
+#include "../Packet/MoveReqPacket.h"
 
 #define SERVERIP   "127.0.0.1"
 #define SERVERPORT 9000
@@ -24,6 +25,8 @@ protected:
 	char buf[BUFSIZE + 1];
 	int len;
 	int retval;
+
+	char ID[10];
 
 public:
 	Client();

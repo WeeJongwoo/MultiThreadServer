@@ -21,6 +21,15 @@
     <ClCompile Include="PacketParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ConReqPacket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveReqPacket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatPacket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Packet.h">
@@ -30,6 +39,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PacketParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConReqPacket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveReqPacket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatPacket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

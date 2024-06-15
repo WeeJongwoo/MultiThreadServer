@@ -1,16 +1,16 @@
 #include "Packet.h"
 
-Packet::Packet(EPacketHeader InHeader, short InEndMark) : header(InHeader), endMark(InEndMark)
+Packet::Packet(EPacketHeader InHeader, short InEndMark) : Header(InHeader), EndMark(InEndMark)
 {
+	Len = sizeof(this);
 }
 
 Packet::~Packet()
 {
-	len = 0;
+	Len = 0;
 }
 
-EPacketHeader* Packet::GetHeader()
+EPacketHeader Packet::GetHeader()
 {
-	return &Header;
+	return Header;
 }
-

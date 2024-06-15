@@ -7,7 +7,8 @@
 #include<stdlib.h>
 #include<iostream>
 #include<tchar.h>
-#include "../Packet/StringPacket.h"
+#include "../Packet/ConReqPacket.h"
+#include "../Packet/MoveReqPacket.h"
 
 #define BUFFERSIZE 512
 #define PORT 9000

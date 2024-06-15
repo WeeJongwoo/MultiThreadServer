@@ -11,3 +11,11 @@ enum class EPacketHeader : char {
 	PK_ACK_MOVE,
 	PK_CHAT_STRING
 };
+
+//EPacketHeader GetBufHeader(char* InBuf)
+//{
+//	EPacketHeader InHeader;
+//
+//	memcpy(&InHeader, InBuf + 2, sizeof(InHeader));
+//	return InHeader;
+//}

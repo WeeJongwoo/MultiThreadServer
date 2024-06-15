@@ -11,5 +11,6 @@ public:
 
 	void Serialize(char* InBuf, Packet* InPacket);
 	void Deserialize(char* InBuf, Packet* InPacket);
+	EPacketHeader GetHeader(char* InBuf);
 };
 

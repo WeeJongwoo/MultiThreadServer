@@ -1,22 +1,27 @@
 #pragma once
 #include "iostream"
 #include "PacketHeader.h"
+#include "string"
+
+using namespace std;
 
 class Packet
 {
 protected:
-	short len;
+	short Len;
 	EPacketHeader Header;
-	short endMark;
+	short EndMark;
 
 public:
 
 	Packet(EPacketHeader InHeader, short InEndMark);
 	~Packet();
 
-	short* GetLen() { return &len; }
-	EPacketHeader* GetHeader();
-	short* GetEndMark() { return &endMark; };
+	int GetLen() { return Len; }
+	EPacketHeader GetHeader();
+
+	virtual void Serialize(char* InSendBuf) = 0;
+	virtual void Deserialize(char* InRecvBuf) = 0;
 
 };
 

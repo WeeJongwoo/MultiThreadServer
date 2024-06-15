@@ -1,4 +1,5 @@
 #include "MultiTreadServer.h"
+#include "../Packet/PacketHeader.h"
 
 ServerAgent::ServerAgent()
 {
@@ -73,7 +74,7 @@ VOID ServerAgent::communicate()
 		}
 
 		//Displaying Client Display
-		std::wcout << std::endl << _T("[TCP Server] Client Connected : IP Address = ") 
+		std::wcout << std::endl << _T("[TCP Server] Client Connected : IP Address = ")
 			<< inet_ntoa(clientAddress.sin_addr) << _T(", Port = ") << ntohs(clientAddress.sin_port) << std::endl;
 
 		//Create Thread
@@ -110,21 +111,44 @@ DWORD WINAPI ServerAgent::SocketThread(LPVOID lpParam)
 		else if (retval == 0)
 			break;
 
-		StringPacket PK_DATA(Buffer);
-		PK_DATA.deserialize(Buffer);
+		EPacketHeader InPacketHeader;
+		memset(&InPacketHeader, Buffer[2], sizeof(EPacketHeader));
 
-		std::cout << "[TCP/" << inet_ntoa(threadSocketAddress.sin_addr)
-			<< _T(":") << PK_DATA.GetData() << std::endl;
+		switch (InPacketHeader)
+		{
+		case EPacketHeader::PK_REQ_CON:
+		{
+			/*ConReqPacket PK_DATA(Buffer);
+			PK_DATA.Deserialize(Buffer);
+			std::cout << "[TCP/" << inet_ntoa(threadSocketAddress.sin_addr)
+				<< _T(":") << PK_DATA.GetID() << std::endl;*/
+			break;
+		}
+		case EPacketHeader::PK_REQ_MOVE:
+		{
+			MoveReqPacket RecvMovePacket(InPacketHeader);
+			RecvMovePacket.Deserialize(Buffer);
+
+			cout << "X: " << RecvMovePacket.GetX() << " Y: " << RecvMovePacket.GetY() << " Z: " << RecvMovePacket.GetZ() << endl;
+
+			break;
+		}
+		case EPacketHeader::PK_CHAT_STRING:
+			break;
+		default:
+			break;
+		}
+
 
 		//Displaying Receiving Data
 		//Buffer[retval+1] = _T('\0');
-		/*std::wcout << _T("[TCP/") << inet_ntoa(threadSocketAddress.sin_addr) 
+		/*std::wcout << _T("[TCP/") << inet_ntoa(threadSocketAddress.sin_addr)
 			<< _T(":") << ntohs(threadSocketAddress.sin_port) << _T("  ") << Buffer << std::endl;*/
 
 
 	}
 	closesocket(sock);
-	std::wcout << _T("[TCP Server] Client Disconnected : IP Address=") 
+	std::wcout << _T("[TCP Server] Client Disconnected : IP Address=")
 		<< inet_ntoa(threadSocketAddress.sin_addr) << _T("PORT = ") << ntohs(threadSocketAddress.sin_port) << std::endl;
 
 	return 1;

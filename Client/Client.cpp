@@ -55,26 +55,25 @@ void Client::Communication()
 {
     char buf[BUFSIZE + 1];
     //int len;
-
     // 서버와 데이터 통신
-    while (1) {
+    while (true) {
         // 데이터 입력
-        printf("\n[보낼 데이터] ");
-       
-		if (fgets(buf, BUFSIZE + 1, stdin) == NULL)
-			break;
+  //      printf("\n[보낼 데이터] ");
+  //     
+		//if (fgets(buf, BUFSIZE + 1, stdin) == NULL)
+		//	break;
 
-		// '\n' 문자 제거
-		len = strlen(buf);
-		if (buf[len - 1] == '\n')
-            buf[len - 1] = '\0';
-		if (strlen(buf) == 0)
-			break;
+		//// '\n' 문자 제거
+		//len = strlen(buf);
+		//if (buf[len - 1] == '\n')
+  //          buf[len - 1] = '\0';
+		//if (strlen(buf) == 0)
+		//	break;
 
-        StringPacket PK_DATA(buf);
+        MoveReqPacket PK_DATA(EPacketHeader::PK_REQ_MOVE, 3, 4, 5);
 
         //// 데이터 보내기
-        PK_DATA.serialize(buf);
+        PK_DATA.Serialize(buf);
 
         retval = send(sock, buf, PK_DATA.GetLen(), 0);
         if (retval == SOCKET_ERROR) {
