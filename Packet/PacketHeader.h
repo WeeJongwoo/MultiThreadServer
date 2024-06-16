@@ -9,7 +9,8 @@ enum class EPacketHeader : char {
 	PK_ACK_CON,
 	PK_REQ_MOVE,
 	PK_ACK_MOVE,
-	PK_CHAT_STRING
+	PK_CHAT_STRING,
+	PK_EXIT
 };
 
 //EPacketHeader GetBufHeader(char* InBuf)

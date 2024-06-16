@@ -152,6 +152,23 @@ DWORD WINAPI ServerAgent::SocketThread(LPVOID lpParam)
 
 			break;
 		}
+		case EPacketHeader::PK_EXIT:
+		{
+			ConReqPacket RecvConPacket(InPacketHeader, new char[10]);
+			RecvConPacket.Deserialize(Buffer);
+
+			time_t timer = time(NULL);
+			tm* time = localtime(&timer);
+
+			cout << time->tm_year + 1900 << "년 " << time->tm_mon + 1 << "월 " << time->tm_hour << "시 "
+				<< time->tm_min << "분 " << time->tm_sec << "초, "
+				<< "Cilent ID: " << RecvConPacket.GetID() << " disconnected" << endl;
+
+			closesocket(sock);
+			std::wcout << _T("[TCP Server] Client Disconnected : IP Address=")
+				<< inet_ntoa(threadSocketAddress.sin_addr) << _T("PORT = ") << ntohs(threadSocketAddress.sin_port) << std::endl;
+			return 1;
+		}
 		default:
 			break;
 		}

@@ -73,7 +73,7 @@ void Client::Communication()
     while (true) {
         char Select;
 
-        cout << "행동을 선택하세요. " << "'M': 이동 / 'C': 채팅" << endl;
+        cout << "행동을 선택하세요. " << "'M': 이동 / 'C': 채팅 / 'E': 종료" << endl;
         cin >> Select;
 
         cin.ignore(1, ' ');
@@ -123,6 +123,21 @@ void Client::Communication()
 
             break;
         }
+        case 'e':
+        case 'E':
+        {
+            ConReqPacket ConPAcket(EPacketHeader::PK_EXIT, ID);
+            ConPAcket.Serialize(buf);
+
+            retval = send(sock, buf, ConPAcket.GetLen(), 0);
+            if (retval == SOCKET_ERROR) {
+                err_display((char*)"send()");
+                return;
+            }
+            printf("[TCP 클라이언트] %d바이트를 보냈습니다.\n", retval);
+            return;
+        }
+
         default:
         {
             cout << "잘못된 행동입니다. 다시 입력해주세요." << endl;
