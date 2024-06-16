@@ -228,7 +228,7 @@ DWORD WINAPI Client::ProcRecv(LPVOID lpParam)
 			MovePacket RecvMovePacket(InPacketHeader, "");
 			RecvMovePacket.Deserialize(buf);
 
-			cout << RecvMovePacket.GetID() << " Move to: "
+			cout << " " << RecvMovePacket.GetID() << " Move to: "
 				<< " X " << RecvMovePacket.GetX() << " Y " << RecvMovePacket.GetY() << " Z " << RecvMovePacket.GetZ() << endl;
 
 			break;
@@ -238,7 +238,7 @@ DWORD WINAPI Client::ProcRecv(LPVOID lpParam)
 			ChatPacket RecvChatPacket("", "");
 			RecvChatPacket.Deserialize(buf);
 
-			cout << RecvChatPacket.GetID() << ": "
+			cout << " " << RecvChatPacket.GetID() << ": "
 				<< RecvChatPacket.GetChat() << endl;
 
 			break;
