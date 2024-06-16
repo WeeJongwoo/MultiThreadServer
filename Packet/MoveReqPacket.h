@@ -1,8 +1,9 @@
 #pragma once
 #include "Packet.h"
+#include "IParser.h"
 
 class MoveReqPacket :
-    public Packet
+    public Packet, public IParser
 {
     int X;
     int Y;
@@ -16,7 +17,7 @@ public:
     int GetY() { return Y; }
     int GetZ() { return Z; }
 
-    virtual void Serialize(char* InSendBuf);
-    virtual void Deserialize(char* InRecvBuf);
+    virtual void Serialize(char* InSendBuf) override;
+    virtual void Deserialize(char* InRecvBuf) override;
 };
 

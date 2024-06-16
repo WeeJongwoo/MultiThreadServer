@@ -5,8 +5,10 @@
 #include <winsock2.h>
 #include <stdlib.h>
 #include "iostream"
+#include "limits"
 #include "../Packet/ConReqPacket.h"
 #include "../Packet/MoveReqPacket.h"
+#include "../Packet/ChatPacket.h"
 
 #define SERVERIP   "127.0.0.1"
 #define SERVERPORT 9000

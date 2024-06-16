@@ -20,8 +20,5 @@ public:
 	int GetLen() { return Len; }
 	EPacketHeader GetHeader();
 
-	virtual void Serialize(char* InSendBuf) = 0;
-	virtual void Deserialize(char* InRecvBuf) = 0;
-
 };
 

@@ -1,18 +1,22 @@
 #pragma once
 #include "Packet.h"
+#include "IParser.h"
 
 class ChatPacket :
-    public Packet
+    public Packet, public IParser
 {
     short ChatLen;
-    char* Chat;
+    string Chat;
 
 public:
-    ChatPacket(const char* InChat, int InChatLen);
+    ChatPacket();
+    ChatPacket(const char* InChat);
     ~ChatPacket();
 
-    virtual void Serialize(char* InSendBuf);
-    virtual void Deserialize(char* InRecvBuf);
+    const char* GetChat() const;
+
+    virtual void Serialize(char* InSendBuf) override;
+    virtual void Deserialize(char* InRecvBuf) override;
 };
 
 

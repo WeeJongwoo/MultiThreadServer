@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="ChatPacket.cpp" />
     <ClCompile Include="ConReqPacket.cpp" />
+    <ClCompile Include="IParser.cpp" />
     <ClCompile Include="MoveReqPacket.cpp" />
     <ClCompile Include="Packet.cpp" />
     <ClCompile Include="PacketParser.cpp" />
@@ -136,6 +137,7 @@
   <ItemGroup>
     <ClInclude Include="ChatPacket.h" />
     <ClInclude Include="ConReqPacket.h" />
+    <ClInclude Include="IParser.h" />
     <ClInclude Include="MoveReqPacket.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="PacketHeader.h" />

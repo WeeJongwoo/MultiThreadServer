@@ -77,6 +77,8 @@ VOID ServerAgent::communicate()
 		std::wcout << std::endl << _T("[TCP Server] Client Connected : IP Address = ")
 			<< inet_ntoa(clientAddress.sin_addr) << _T(", Port = ") << ntohs(clientAddress.sin_port) << std::endl;
 
+		ClientSockets.push_back(clientSocket);
+
 		//Create Thread
 		hThread = CreateThread(NULL, 0, SocketThread, this, 0, NULL);
 		if (hThread == NULL)
@@ -118,10 +120,16 @@ DWORD WINAPI ServerAgent::SocketThread(LPVOID lpParam)
 		{
 		case EPacketHeader::PK_REQ_CON:
 		{
-			/*ConReqPacket PK_DATA(Buffer);
-			PK_DATA.Deserialize(Buffer);
-			std::cout << "[TCP/" << inet_ntoa(threadSocketAddress.sin_addr)
-				<< _T(":") << PK_DATA.GetID() << std::endl;*/
+			ConReqPacket RecvConPacket(InPacketHeader, new char[10]);
+			RecvConPacket.Deserialize(Buffer);
+
+			time_t timer = time(NULL);
+			tm* time = localtime(&timer);
+
+			cout << time->tm_year + 1900 << "년 " << time->tm_mon +1 << "월 " << time->tm_hour << "시 "
+				<< time->tm_min << "분 " << time->tm_sec << "초, " 
+				<< "Cilent ID: " << RecvConPacket.GetID() << " connected" << endl;
+
 			break;
 		}
 		case EPacketHeader::PK_REQ_MOVE:
@@ -129,12 +137,21 @@ DWORD WINAPI ServerAgent::SocketThread(LPVOID lpParam)
 			MoveReqPacket RecvMovePacket(InPacketHeader);
 			RecvMovePacket.Deserialize(Buffer);
 
-			cout << "X: " << RecvMovePacket.GetX() << " Y: " << RecvMovePacket.GetY() << " Z: " << RecvMovePacket.GetZ() << endl;
+			cout << inet_ntoa(threadSocketAddress.sin_addr) << " Move to: "
+				<< " X " << RecvMovePacket.GetX() << " Y " << RecvMovePacket.GetY() << " Z " << RecvMovePacket.GetZ() << endl;
 
 			break;
 		}
 		case EPacketHeader::PK_CHAT_STRING:
+		{
+			ChatPacket RecvChatPacket("");
+			RecvChatPacket.Deserialize(Buffer);
+
+			cout << inet_ntoa(threadSocketAddress.sin_addr) << ": "
+				<< RecvChatPacket.GetChat() << endl;
+
 			break;
+		}
 		default:
 			break;
 		}

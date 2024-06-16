@@ -11,9 +11,6 @@ MoveReqPacket::~MoveReqPacket()
 
 void MoveReqPacket::Serialize(char* InSendBuf)
 {
-	//EPacketHeader* InPacketHeader = &this->Header;
-	//memcpy(InSendBuf + sizeof(*InPacketLen), InPacketHeader, sizeof(*InPacketHeader));
-	
 	string strX = to_string(this->X);
 	string strY = to_string(this->Y);
 	string strZ = to_string(this->Z);
@@ -49,20 +46,24 @@ void MoveReqPacket::Deserialize(char* InRecvBuf)
 	short LenY;
 	short LenZ;
 
+	//X
 	memcpy(&LenX, InRecvBuf + sizeof(Len) + sizeof(Header), sizeof(LenX));
 	char* strX = new char[LenX];
 	memcpy(strX, InRecvBuf + sizeof(Len) + sizeof(Header) + sizeof(LenX), LenX);
 	X = stoi(strX);
 
+	//Y
 	memcpy(&LenY, InRecvBuf + sizeof(Len) + sizeof(Header) + sizeof(LenX) + LenX, sizeof(LenY));
 	char* strY = new char[LenY];
 	memcpy(strY, InRecvBuf + sizeof(Len) + sizeof(Header) + sizeof(LenX) + LenX + sizeof(LenY), LenY);
 	Y = stoi(strY);
 
+	//Z
 	memcpy(&LenZ, InRecvBuf + sizeof(Len) + sizeof(Header) + sizeof(LenX) + LenX + sizeof(LenY) + LenY, sizeof(LenZ));
 	char* strZ = new char[LenZ];
 	memcpy(strZ, InRecvBuf + sizeof(Len) + sizeof(Header) + sizeof(LenX) + LenX + sizeof(LenY) + LenY + sizeof(LenZ), LenZ);
 	Z = stoi(strZ);
+
 	memcpy(&EndMark, InRecvBuf + Len - sizeof(EndMark), sizeof(EndMark));
 
 	delete[] strX;

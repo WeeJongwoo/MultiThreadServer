@@ -2,10 +2,11 @@
 #include "ConReqPacket.h"
 
 
-ConReqPacket::ConReqPacket(EPacketHeader InHeader, char* InID): Packet(InHeader,ENDMARK)
+ConReqPacket::ConReqPacket(EPacketHeader InHeader, char* InID): Packet(InHeader,ENDMARK), ClientID(new char[strlen(InID) + 1])
 {
-	strcpy(ClientID, InID);
-	Len = sizeof(Len) + sizeof(EndMark) + sizeof(Header) + sizeof(ClientID);
+	ClientID = InID;
+
+	Len = sizeof(Len) + sizeof(EndMark) + sizeof(Header) + ClientID.size();
 }
 
 ConReqPacket::~ConReqPacket()
@@ -14,7 +15,7 @@ ConReqPacket::~ConReqPacket()
 
 const char* ConReqPacket::GetID() const
 {
-	return ClientID;
+	return ClientID.c_str();
 }
 
 void ConReqPacket::Serialize(char* InSendBuf)
@@ -22,21 +23,33 @@ void ConReqPacket::Serialize(char* InSendBuf)
 	//short* InPacketLen = &this->Len;
 	//EPacketHeader* InPacketHeader = &this->Header;
 	//short* InPacketEndArk = &this->EndMark;
+	short IDLen = ClientID.size();
+	Len = sizeof(Len) + sizeof(EndMark) + sizeof(Header) + sizeof(IDLen) + IDLen;
 
 	memcpy(InSendBuf, &Len, sizeof(Len));
 	//memcpy(InSendBuf + sizeof(*InPacketLen), InPacketHeader, sizeof(*InPacketHeader));
+	memcpy(InSendBuf + sizeof(Len), &Header, sizeof(Header));
+	memcpy(InSendBuf + sizeof(Len) + sizeof(Header), &IDLen, sizeof(IDLen));
+	memcpy(InSendBuf + sizeof(Len) + sizeof(Header) + sizeof(IDLen), ClientID.c_str(), IDLen);
 	memcpy(InSendBuf + Len - 2, &EndMark, sizeof(EndMark));
-	memcpy(InSendBuf + sizeof(Len) + sizeof(Header), this->ClientID, sizeof(ClientID));
 }
 
-void ConReqPacket::Deserialize(char* InRecvdBuf)
+void ConReqPacket::Deserialize(char* InRecvBuf)
 {
 	//short* InPacketLen = &this->Len;
 	//EPacketHeader* InPacketHeader = &this->Header;
 	//short* InPacketEndArk = &this->EndMark;
+	short IDLen;
 
-	memcpy(&Len, InRecvdBuf, sizeof(Len));
+	memcpy(&Len, InRecvBuf, sizeof(Len));
 	//memcpy(&Header, InRecvdBuf + sizeof(Len), sizeof(Header));
-	memcpy(&EndMark, InRecvdBuf + Len - 2, sizeof(EndMark));
-	memcpy(ClientID, InRecvdBuf + sizeof(Len) + sizeof(Header), sizeof(ClientID));
+	memcpy(&IDLen, InRecvBuf + sizeof(Len) + sizeof(Header), sizeof(IDLen));
+	char* InID = new char[IDLen+1];
+	memcpy(InID, InRecvBuf + sizeof(Len) + sizeof(Header) + sizeof(IDLen), IDLen);
+	InID[IDLen] = '\0';
+	ClientID = InID;
+
+	memcpy(&EndMark, InRecvBuf + Len - 2, sizeof(EndMark));
+
+	delete[] InID;
 }

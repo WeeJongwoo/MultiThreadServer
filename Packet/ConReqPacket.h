@@ -1,18 +1,20 @@
 #pragma once
 #include "Packet.h"
+#include "IParser.h"
+
 class ConReqPacket :
-    public Packet
+    public Packet, public IParser
 {
 private:
-    char ClientID[10];
+    string ClientID;
 
 public:
-    ConReqPacket(EPacketHeader InHeader,char* InID);
+    ConReqPacket(EPacketHeader InHeader, char* InID);
     ~ConReqPacket();
 
     const char* GetID() const;
 
     virtual void Serialize(char* InSendBuf) override;
-    virtual void Deserialize(char* InRecvdBuf) override;
+    virtual void Deserialize(char* InRecvBuf) override;
 };
 
