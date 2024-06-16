@@ -67,7 +67,7 @@ void Client::Communication()
 	cout << "Init ID:  ";
 	cin >> ID;
 
-	ConReqPacket ConPacket(EPacketHeader::PK_REQ_CON, ID.c_str());
+	ConPacket ConPacket(EPacketHeader::PK_REQ_CON, ID.c_str());
 	ConPacket.Serialize(buf);
 
 	retval = send(sock, buf, ConPacket.GetLen(), 0);
@@ -120,7 +120,7 @@ DWORD WINAPI Client::ProcSend(LPVOID lpParam)
 			cout << "이동할 좌표를 입력해주세요(예시: 2 3 4): ";
 			cin >> X >> Y >> Z;
 
-			MoveReqPacket ReqMovePacket(EPacketHeader::PK_REQ_MOVE, This->ID.c_str(), X, Y, Z);
+			MovePacket ReqMovePacket(EPacketHeader::PK_REQ_MOVE, This->ID.c_str(), X, Y, Z);
 
 			//// 데이터 보내기
 			ReqMovePacket.Serialize(buf);
@@ -161,7 +161,7 @@ DWORD WINAPI Client::ProcSend(LPVOID lpParam)
 			if (cin.gcount() >= 2)
 				cin.ignore((numeric_limits<streamsize>::max)(), '\n');
 
-			ConReqPacket ConPAcket(EPacketHeader::PK_EXIT, This->ID.c_str());
+			ConPacket ConPAcket(EPacketHeader::PK_EXIT, This->ID.c_str());
 			ConPAcket.Serialize(buf);
 
 			retval = send(sock, buf, ConPAcket.GetLen(), 0);
@@ -211,7 +211,7 @@ DWORD WINAPI Client::ProcRecv(LPVOID lpParam)
 		case EPacketHeader::PK_REQ_CON:
 		{
 
-			ConReqPacket RecvConPacket(InPacketHeader, "");
+			ConPacket RecvConPacket(InPacketHeader, "");
 			RecvConPacket.Deserialize(buf);
 
 			time_t timer = time(NULL);
@@ -225,7 +225,7 @@ DWORD WINAPI Client::ProcRecv(LPVOID lpParam)
 		}
 		case EPacketHeader::PK_REQ_MOVE:
 		{
-			MoveReqPacket RecvMovePacket(InPacketHeader, "");
+			MovePacket RecvMovePacket(InPacketHeader, "");
 			RecvMovePacket.Deserialize(buf);
 
 			cout << RecvMovePacket.GetID() << " Move to: "
@@ -245,7 +245,7 @@ DWORD WINAPI Client::ProcRecv(LPVOID lpParam)
 		}
 		case EPacketHeader::PK_EXIT:
 		{
-			ConReqPacket RecvConPacket(InPacketHeader, "");
+			ConPacket RecvConPacket(InPacketHeader, "");
 			RecvConPacket.Deserialize(buf);
 
 			time_t timer = time(NULL);

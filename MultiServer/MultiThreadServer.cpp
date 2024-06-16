@@ -130,7 +130,7 @@ DWORD WINAPI ServerAgent::SocketThread(LPVOID lpParam)
 		case EPacketHeader::PK_REQ_CON:
 		{
 
-			ConReqPacket RecvConPacket(InPacketHeader, new char[10]);
+			ConPacket RecvConPacket(InPacketHeader, new char[10]);
 			RecvConPacket.Deserialize(Buffer);
 
 			time_t timer = time(NULL);
@@ -158,7 +158,7 @@ DWORD WINAPI ServerAgent::SocketThread(LPVOID lpParam)
 		}
 		case EPacketHeader::PK_REQ_MOVE:
 		{
-			MoveReqPacket RecvMovePacket(InPacketHeader, "");
+			MovePacket RecvMovePacket(InPacketHeader, "");
 			RecvMovePacket.Deserialize(Buffer);
 
 			cout << inet_ntoa(threadSocketAddress.sin_addr) << RecvMovePacket.GetID() <<" Move to: "
@@ -200,7 +200,7 @@ DWORD WINAPI ServerAgent::SocketThread(LPVOID lpParam)
 		}
 		case EPacketHeader::PK_EXIT:
 		{
-			ConReqPacket RecvConPacket(InPacketHeader, new char[10]);
+			ConPacket RecvConPacket(InPacketHeader, new char[10]);
 			RecvConPacket.Deserialize(Buffer);
 
 			time_t timer = time(NULL);

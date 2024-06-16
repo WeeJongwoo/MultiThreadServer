@@ -2,7 +2,7 @@
 #include "Packet.h"
 #include "IParser.h"
 
-class MoveReqPacket :
+class MovePacket :
     public Packet, public IParser
 {
     int X;
@@ -11,8 +11,8 @@ class MoveReqPacket :
     string ClientID;
 
 public:
-    MoveReqPacket(EPacketHeader InHeader, const char* InID, int InX = 0, int InY = 0, int InZ = 0);
-    ~MoveReqPacket();
+    MovePacket(EPacketHeader InHeader, const char* InID, int InX = 0, int InY = 0, int InZ = 0);
+    ~MovePacket();
 
     int GetX() { return X; }
     int GetY() { return Y; }

@@ -2,18 +2,18 @@
 #include "ConReqPacket.h"
 
 
-ConReqPacket::ConReqPacket(EPacketHeader InHeader, const char* InID): Packet(InHeader,ENDMARK), ClientID(new char[strlen(InID) + 1])
+ConPacket::ConPacket(EPacketHeader InHeader, const char* InID): Packet(InHeader,ENDMARK), ClientID(new char[strlen(InID) + 1])
 {
 	ClientID = InID;
 
 	Len = sizeof(Len) + sizeof(EndMark) + sizeof(Header) + ClientID.size();
 }
 
-ConReqPacket::~ConReqPacket()
+ConPacket::~ConPacket()
 {
 }
 
-void ConReqPacket::Serialize(char* InSendBuf)
+void ConPacket::Serialize(char* InSendBuf)
 {
 	//short* InPacketLen = &this->Len;
 	//EPacketHeader* InPacketHeader = &this->Header;
@@ -29,7 +29,7 @@ void ConReqPacket::Serialize(char* InSendBuf)
 	memcpy(InSendBuf + Len - 2, &EndMark, sizeof(EndMark));
 }
 
-void ConReqPacket::Deserialize(char* InRecvBuf)
+void ConPacket::Deserialize(char* InRecvBuf)
 {
 	//short* InPacketLen = &this->Len;
 	//EPacketHeader* InPacketHeader = &this->Header;

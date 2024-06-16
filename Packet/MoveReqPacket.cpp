@@ -1,16 +1,16 @@
 #include "MoveReqPacket.h"
 
-MoveReqPacket::MoveReqPacket(EPacketHeader InHeader, const char* InID, int InX, int InY, int InZ): Packet(InHeader, ENDMARK), X(InX), Y(InY), Z(InZ)
+MovePacket::MovePacket(EPacketHeader InHeader, const char* InID, int InX, int InY, int InZ): Packet(InHeader, ENDMARK), X(InX), Y(InY), Z(InZ)
 {
 	ClientID = InID;
 	Len = sizeof(Len) + sizeof(Header) + sizeof(EndMark) + sizeof(X) + sizeof(Y), sizeof(Z);
 }
 
-MoveReqPacket::~MoveReqPacket()
+MovePacket::~MovePacket()
 {
 }
 
-void MoveReqPacket::Serialize(char* InSendBuf)
+void MovePacket::Serialize(char* InSendBuf)
 {
 	string strX = to_string(this->X);
 	string strY = to_string(this->Y);
@@ -44,7 +44,7 @@ void MoveReqPacket::Serialize(char* InSendBuf)
 
 }
 
-void MoveReqPacket::Deserialize(char* InRecvBuf)
+void MovePacket::Deserialize(char* InRecvBuf)
 {
 	memcpy(&Len, InRecvBuf, sizeof(Len));
 

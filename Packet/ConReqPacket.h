@@ -2,15 +2,15 @@
 #include "Packet.h"
 #include "IParser.h"
 
-class ConReqPacket :
+class ConPacket :
     public Packet, public IParser
 {
 private:
     string ClientID;
 
 public:
-    ConReqPacket(EPacketHeader InHeader, const char* InID);
-    ~ConReqPacket();
+    ConPacket(EPacketHeader InHeader, const char* InID);
+    ~ConPacket();
 
     const char* GetID() const { return ClientID.c_str(); };
 
