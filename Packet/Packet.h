@@ -12,6 +12,7 @@ protected:
 	EPacketHeader Header;
 	short EndMark;
 
+
 public:
 
 	Packet(EPacketHeader InHeader, short InEndMark);

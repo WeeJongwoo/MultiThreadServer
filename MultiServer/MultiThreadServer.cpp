@@ -1,11 +1,16 @@
 #include "MultiTreadServer.h"
 #include "../Packet/PacketHeader.h"
 
+vector<SOCKET> ServerAgent::ClientSockets;
+HANDLE ServerAgent::ServerMutex;
+
 ServerAgent::ServerAgent()
 {
 	SERVERPORT = PORT;
 	if (WSAStartup(MAKEWORD(2, 2), &Wsadata) != 0)
 		return;
+
+	ServerMutex = CreateMutex(NULL, FALSE, NULL);
 }
 ServerAgent::~ServerAgent()
 {
@@ -77,14 +82,16 @@ VOID ServerAgent::communicate()
 		std::wcout << std::endl << _T("[TCP Server] Client Connected : IP Address = ")
 			<< inet_ntoa(clientAddress.sin_addr) << _T(", Port = ") << ntohs(clientAddress.sin_port) << std::endl;
 
+		/*u_long on = 1;
+		ioctlsocket(clientSocket, FIONBIO, &on);*/
 		ClientSockets.push_back(clientSocket);
 
 		//Create Thread
 		hThread = CreateThread(NULL, 0, SocketThread, this, 0, NULL);
 		if (hThread == NULL)
 			closesocket(clientSocket);
-		else
-			CloseHandle(hThread);
+		//else
+			//CloseHandle(hThread);
 	}
 }
 
@@ -92,10 +99,12 @@ DWORD WINAPI ServerAgent::SocketThread(LPVOID lpParam)
 {
 	ServerAgent* This = (ServerAgent*)lpParam;
 	SOCKET sock = This->clientSocket;
+
 	INT retval;
 	INT addressLen;
 	SOCKADDR_IN threadSocketAddress;
 	TCHAR Buffer[BUFFERSIZE + 1];
+	TCHAR SnadBuffer[BUFFERSIZE + 1];
 
 	//Get Client Information
 	addressLen = sizeof(SOCKADDR_IN);
@@ -104,22 +113,23 @@ DWORD WINAPI ServerAgent::SocketThread(LPVOID lpParam)
 	while (1)
 	{
 		//Receving Data
-		retval = recv(sock, (CHAR*)Buffer, BUFFERSIZE, 0);
+		retval = recv(sock, Buffer, BUFFERSIZE, 0);
 		if (retval == SOCKET_ERROR)
 		{
-			This->error_Display((char*)("recv()"));
+			cout << GetLastError();
 			break;
 		}
 		else if (retval == 0)
 			break;
 
 		EPacketHeader InPacketHeader;
-		memset(&InPacketHeader, Buffer[2], sizeof(EPacketHeader));
+		memset(&InPacketHeader, Buffer[PacketPos], sizeof(EPacketHeader));
 
 		switch (InPacketHeader)
 		{
 		case EPacketHeader::PK_REQ_CON:
 		{
+
 			ConReqPacket RecvConPacket(InPacketHeader, new char[10]);
 			RecvConPacket.Deserialize(Buffer);
 
@@ -130,25 +140,61 @@ DWORD WINAPI ServerAgent::SocketThread(LPVOID lpParam)
 				<< time->tm_min << "분 " << time->tm_sec << "초, " 
 				<< "Cilent ID: " << RecvConPacket.GetID() << " connected" << endl;
 
+			WaitForSingleObject(ServerMutex, INFINITE);
+
+			for (auto ClientSoc : ClientSockets)
+			{
+				RecvConPacket.Serialize(SnadBuffer);
+
+				retval = send(ClientSoc, SnadBuffer, RecvConPacket.GetLen(), 0);
+				if (retval == SOCKET_ERROR) {
+					cout << "Sand Error";
+					break;
+				}
+			}
+
+			ReleaseMutex(ServerMutex);
 			break;
 		}
 		case EPacketHeader::PK_REQ_MOVE:
 		{
-			MoveReqPacket RecvMovePacket(InPacketHeader);
+			MoveReqPacket RecvMovePacket(InPacketHeader, "");
 			RecvMovePacket.Deserialize(Buffer);
 
-			cout << inet_ntoa(threadSocketAddress.sin_addr) << " Move to: "
+			cout << inet_ntoa(threadSocketAddress.sin_addr) << RecvMovePacket.GetID() <<" Move to: "
 				<< " X " << RecvMovePacket.GetX() << " Y " << RecvMovePacket.GetY() << " Z " << RecvMovePacket.GetZ() << endl;
+
+			for (auto ClientSoc : ClientSockets)
+			{
+				RecvMovePacket.Serialize(SnadBuffer);
+
+				retval = send(ClientSoc, SnadBuffer, RecvMovePacket.GetLen(), 0);
+				if (retval == SOCKET_ERROR) {
+					cout << "Sand Error";
+					break;
+				}
+			}
 
 			break;
 		}
 		case EPacketHeader::PK_CHAT_STRING:
 		{
-			ChatPacket RecvChatPacket("");
+			ChatPacket RecvChatPacket("", "");
 			RecvChatPacket.Deserialize(Buffer);
 
-			cout << inet_ntoa(threadSocketAddress.sin_addr) << ": "
+			cout << RecvChatPacket.GetID() << ": "
 				<< RecvChatPacket.GetChat() << endl;
+
+			for (auto ClientSoc : ClientSockets)
+			{
+				RecvChatPacket.Serialize(SnadBuffer);
+
+				retval = send(ClientSoc, SnadBuffer, RecvChatPacket.GetLen(), 0);
+				if (retval == SOCKET_ERROR) {
+					cout << "Sand Error";
+					break;
+				}
+			}
 
 			break;
 		}
@@ -164,7 +210,22 @@ DWORD WINAPI ServerAgent::SocketThread(LPVOID lpParam)
 				<< time->tm_min << "분 " << time->tm_sec << "초, "
 				<< "Cilent ID: " << RecvConPacket.GetID() << " disconnected" << endl;
 
+			for (auto ClientSoc : ClientSockets)
+			{
+				RecvConPacket.Serialize(SnadBuffer);
+
+				retval = send(ClientSoc, SnadBuffer, RecvConPacket.GetLen(), 0);
+				if (retval == SOCKET_ERROR) {
+					cout << "Sand Error";
+					break;
+				}
+			}
 			closesocket(sock);
+		
+			auto ClientSock = find(ClientSockets.begin(), ClientSockets.end(), sock);
+			if (ClientSock != ClientSockets.end())
+				ClientSockets.erase(ClientSock);
+
 			std::wcout << _T("[TCP Server] Client Disconnected : IP Address=")
 				<< inet_ntoa(threadSocketAddress.sin_addr) << _T("PORT = ") << ntohs(threadSocketAddress.sin_port) << std::endl;
 			return 1;

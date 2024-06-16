@@ -2,6 +2,7 @@
 
 #define DATASIZE 30
 #define ENDMARK (short)0xffff
+#define PacketPos 2
 
 enum class EPacketHeader : char {
 	NOT_INIT = 0,

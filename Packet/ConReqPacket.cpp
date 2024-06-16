@@ -2,7 +2,7 @@
 #include "ConReqPacket.h"
 
 
-ConReqPacket::ConReqPacket(EPacketHeader InHeader, char* InID): Packet(InHeader,ENDMARK), ClientID(new char[strlen(InID) + 1])
+ConReqPacket::ConReqPacket(EPacketHeader InHeader, const char* InID): Packet(InHeader,ENDMARK), ClientID(new char[strlen(InID) + 1])
 {
 	ClientID = InID;
 
@@ -11,11 +11,6 @@ ConReqPacket::ConReqPacket(EPacketHeader InHeader, char* InID): Packet(InHeader,
 
 ConReqPacket::~ConReqPacket()
 {
-}
-
-const char* ConReqPacket::GetID() const
-{
-	return ClientID.c_str();
 }
 
 void ConReqPacket::Serialize(char* InSendBuf)

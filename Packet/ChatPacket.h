@@ -7,13 +7,14 @@ class ChatPacket :
 {
     short ChatLen;
     string Chat;
+    string ClientID;
 
 public:
-    ChatPacket();
-    ChatPacket(const char* InChat);
+    ChatPacket(const char* InChat, const char* InID);
     ~ChatPacket();
 
     const char* GetChat() const;
+    const char* GetID() const { return ClientID.c_str(); };
 
     virtual void Serialize(char* InSendBuf) override;
     virtual void Deserialize(char* InRecvBuf) override;

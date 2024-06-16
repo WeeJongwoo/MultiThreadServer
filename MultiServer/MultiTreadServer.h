@@ -8,10 +8,11 @@
 #include<iostream>
 #include<tchar.h>
 #include "vector"
+#include "algorithm"
+#include "ctime"
 #include "../Packet/ConReqPacket.h"
 #include "../Packet/MoveReqPacket.h"
 #include "../Packet/ChatPacket.h"
-#include "ctime"
 
 #define BUFFERSIZE 512
 #define PORT 9000
@@ -28,10 +29,12 @@ private:
 
 	//Variable for Data Communication
 	SOCKET clientSocket;
-	vector<SOCKET> ClientSockets;
 	SOCKADDR_IN clientAddress;
 	INT AddressLen;
 	TCHAR Buffer[BUFFERSIZE + 1];
+
+	static vector<SOCKET> ClientSockets;
+	static HANDLE ServerMutex;
 
 public:
 	ServerAgent();

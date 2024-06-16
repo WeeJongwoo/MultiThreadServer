@@ -1,7 +1,8 @@
 #include "MoveReqPacket.h"
 
-MoveReqPacket::MoveReqPacket(EPacketHeader InHeader, int InX, int InY, int InZ): Packet(InHeader, ENDMARK), X(InX), Y(InY), Z(InZ)
+MoveReqPacket::MoveReqPacket(EPacketHeader InHeader, const char* InID, int InX, int InY, int InZ): Packet(InHeader, ENDMARK), X(InX), Y(InY), Z(InZ)
 {
+	ClientID = InID;
 	Len = sizeof(Len) + sizeof(Header) + sizeof(EndMark) + sizeof(X) + sizeof(Y), sizeof(Z);
 }
 
@@ -18,22 +19,27 @@ void MoveReqPacket::Serialize(char* InSendBuf)
 	short LenX = (short)strX.size();
 	short LenY = (short)strY.size();
 	short LenZ = (short)strZ.size();
+	short IDLen = (short)ClientID.size();
 
-	int XPos = sizeof(Len) + sizeof(Header);
+	int IDPos = sizeof(Len) + sizeof(Header);
+	int XPos = IDPos + sizeof(IDLen) + IDLen;
 	int YPos = XPos + sizeof(LenX) + LenX;
 	int ZPos = YPos + sizeof(LenY) + LenY;
 
 	Len = (short)(sizeof(Len) + sizeof(Header) + ZPos + sizeof(LenZ) + LenZ + sizeof(EndMark));
 	
-	memcpy(InSendBuf + XPos , &LenX, sizeof(LenX));
+	memcpy(InSendBuf, &Len, sizeof(Len));
+	memcpy(InSendBuf + sizeof(Len), &Header, sizeof(Header));
+	memcpy(InSendBuf + IDPos, &IDLen, sizeof(IDLen));
+	memcpy(InSendBuf + IDPos + sizeof(IDLen), ClientID.c_str(), IDLen);
+
+	memcpy(InSendBuf + XPos, &LenX, sizeof(LenX));
 	memcpy(InSendBuf + XPos + sizeof(LenX), strX.c_str(), LenX);
 	memcpy(InSendBuf + YPos, &LenY, sizeof(LenY));
 	memcpy(InSendBuf + YPos + sizeof(LenY), strY.c_str(), LenY);
 	memcpy(InSendBuf + ZPos, &LenZ, sizeof(LenZ));
 	memcpy(InSendBuf + ZPos + sizeof(LenZ), strZ.c_str(), LenZ);
-	
-	memcpy(InSendBuf, &Len, sizeof(Len));
-	memcpy(InSendBuf + sizeof(Len), &Header, sizeof(Header));
+
 	memcpy(InSendBuf + Len - sizeof(EndMark), &EndMark, sizeof(EndMark));
 
 }
@@ -42,26 +48,39 @@ void MoveReqPacket::Deserialize(char* InRecvBuf)
 {
 	memcpy(&Len, InRecvBuf, sizeof(Len));
 
+	short IDLen;
 	short LenX;
 	short LenY;
 	short LenZ;
 
+	int IDPos = sizeof(Len) + sizeof(Header);
+
+	memcpy(&IDLen, InRecvBuf + IDPos, sizeof(IDLen));
+	char* InID = new char[IDLen + 1];
+	memcpy(InID, InRecvBuf + IDPos + sizeof(IDLen), IDLen);
+	InID[IDLen] = '\0';
+	ClientID = InID;
+
+	int XPos = IDPos + sizeof(IDLen) + IDLen;
+
 	//X
-	memcpy(&LenX, InRecvBuf + sizeof(Len) + sizeof(Header), sizeof(LenX));
+	memcpy(&LenX, InRecvBuf + XPos, sizeof(LenX));
 	char* strX = new char[LenX];
-	memcpy(strX, InRecvBuf + sizeof(Len) + sizeof(Header) + sizeof(LenX), LenX);
+	memcpy(strX, InRecvBuf + XPos + sizeof(LenX), LenX);
 	X = stoi(strX);
 
+	int YPos = XPos + sizeof(LenX) + LenX;
 	//Y
-	memcpy(&LenY, InRecvBuf + sizeof(Len) + sizeof(Header) + sizeof(LenX) + LenX, sizeof(LenY));
+	memcpy(&LenY, InRecvBuf + YPos, sizeof(LenY));
 	char* strY = new char[LenY];
-	memcpy(strY, InRecvBuf + sizeof(Len) + sizeof(Header) + sizeof(LenX) + LenX + sizeof(LenY), LenY);
+	memcpy(strY, InRecvBuf + YPos + sizeof(LenY), LenY);
 	Y = stoi(strY);
 
+	int ZPos = YPos + sizeof(LenY) + LenY;
 	//Z
-	memcpy(&LenZ, InRecvBuf + sizeof(Len) + sizeof(Header) + sizeof(LenX) + LenX + sizeof(LenY) + LenY, sizeof(LenZ));
+	memcpy(&LenZ, InRecvBuf + ZPos, sizeof(LenZ));
 	char* strZ = new char[LenZ];
-	memcpy(strZ, InRecvBuf + sizeof(Len) + sizeof(Header) + sizeof(LenX) + LenX + sizeof(LenY) + LenY + sizeof(LenZ), LenZ);
+	memcpy(strZ, InRecvBuf + ZPos + sizeof(LenZ), LenZ);
 	Z = stoi(strZ);
 
 	memcpy(&EndMark, InRecvBuf + Len - sizeof(EndMark), sizeof(EndMark));
