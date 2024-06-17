@@ -199,8 +199,6 @@ DWORD WINAPI Client::ProcRecv(LPVOID lpParam)
 		else if (retval == 0)
 			break;
 
-		WaitForSingleObject(Mutex, INFINITE);
-
 		EPacketHeader InPacketHeader;
 		memset(&InPacketHeader, buf[PacketPos], sizeof(EPacketHeader));
 
@@ -252,13 +250,11 @@ DWORD WINAPI Client::ProcRecv(LPVOID lpParam)
 			cout << time->tm_year + 1900 << "년 " << time->tm_mon + 1 << "월 " << time->tm_hour << "시 "
 				<< time->tm_min << "분 " << time->tm_sec << "초, "
 				<< "Cilent ID: " << RecvConPacket.GetID() << " disconnected" << endl;
-			ReleaseMutex(Mutex);
 			return 1;
 		}
 		default:
 			break;
 		}
-		ReleaseMutex(Mutex);
 	}
 	return 1;
 }
