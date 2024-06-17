@@ -82,16 +82,14 @@ VOID ServerAgent::communicate()
 		std::wcout << std::endl << _T("[TCP Server] Client Connected : IP Address = ")
 			<< inet_ntoa(clientAddress.sin_addr) << _T(", Port = ") << ntohs(clientAddress.sin_port) << std::endl;
 
-		/*u_long on = 1;
-		ioctlsocket(clientSocket, FIONBIO, &on);*/
 		ClientSockets.push_back(clientSocket);
 
 		//Create Thread
 		hThread = CreateThread(NULL, 0, SocketThread, this, 0, NULL);
 		if (hThread == NULL)
 			closesocket(clientSocket);
-		//else
-			//CloseHandle(hThread);
+		else
+			CloseHandle(hThread);
 	}
 }
 
@@ -161,7 +159,7 @@ DWORD WINAPI ServerAgent::SocketThread(LPVOID lpParam)
 			MovePacket RecvMovePacket(InPacketHeader, "");
 			RecvMovePacket.Deserialize(Buffer);
 
-			cout << inet_ntoa(threadSocketAddress.sin_addr) << RecvMovePacket.GetID() <<" Move to: "
+			cout << inet_ntoa(threadSocketAddress.sin_addr) << " " << RecvMovePacket.GetID() << " Move to: "
 				<< " X " << RecvMovePacket.GetX() << " Y " << RecvMovePacket.GetY() << " Z " << RecvMovePacket.GetZ() << endl;
 
 			for (auto ClientSoc : ClientSockets)
@@ -226,20 +224,13 @@ DWORD WINAPI ServerAgent::SocketThread(LPVOID lpParam)
 			if (ClientSock != ClientSockets.end())
 				ClientSockets.erase(ClientSock);
 
-			std::wcout << _T("[TCP Server] Client Disconnected : IP Address=")
-				<< inet_ntoa(threadSocketAddress.sin_addr) << _T("PORT = ") << ntohs(threadSocketAddress.sin_port) << std::endl;
+			std::wcout << _T("[TCP Server] Client Disconnected : IP Address= ")
+				<< inet_ntoa(threadSocketAddress.sin_addr) << _T(" PORT = ") << ntohs(threadSocketAddress.sin_port) << std::endl;
 			return 1;
 		}
 		default:
 			break;
 		}
-
-
-		//Displaying Receiving Data
-		//Buffer[retval+1] = _T('\0');
-		/*std::wcout << _T("[TCP/") << inet_ntoa(threadSocketAddress.sin_addr)
-			<< _T(":") << ntohs(threadSocketAddress.sin_port) << _T("  ") << Buffer << std::endl;*/
-
 
 	}
 	closesocket(sock);

@@ -25,7 +25,7 @@ void ChatPacket::Serialize(char* InSendBuf)
 	short IDLen = (short)ClientID.size();
 	int IDPos = sizeof(Len) + sizeof(Header);
 
-	Len = sizeof(Len) + sizeof(EndMark) + sizeof(Header) + sizeof(ChatLen) + ChatLen;
+	Len = sizeof(Len) + sizeof(EndMark) + sizeof(Header) + sizeof(ChatLen) + ChatLen + sizeof(IDLen) + IDLen;
 
 	memcpy(InSendBuf, &Len, sizeof(Len));
 	//memcpy(InSendBuf + sizeof(*InPacketLen), InPacketHeader, sizeof(*InPacketHeader));

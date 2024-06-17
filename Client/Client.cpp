@@ -56,8 +56,6 @@ void Client::Init()
 	retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR) err_quit((char*)"connect()");
 
-	/*u_long on = 1;
-	ioctlsocket(sock, FIONBIO, &on);*/
 }
 
 void Client::Communication()
